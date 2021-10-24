@@ -55,7 +55,7 @@ pub fn reverse_rna_complement(dna: &[char]) -> Vec<char> {
             'A' => result.push('U'),
             'C' => result.push('G'),
             'G' => result.push('C'),
-            'U' => result.push('A'),
+            'T' => result.push('A'),
             _ => panic!("Няма съвпадение за теб, нито тук, нито в Тиндър! :(")
         };
     }
