@@ -1,8 +1,9 @@
 function LineB()
 fig = uifigure;
 clearButton = uibutton(fig,'push', 'Text','Clear','Position',[250,210,135,25], 'ButtonPushedFcn', @(btn,event) clearPlot());
-butPlotSimple = uibutton(fig,'push', 'Text','Plot Simple','Position',[250,240,135,25], 'ButtonPushedFcn', @(btn,event) LineBHelp());
-butPlotRound = uibutton(fig,'push', 'Text','Plot Round method','Position',[250,270,135,25], 'ButtonPushedFcn', @(btn,event) LineBRound());
+butPlotSimple = uibutton(fig,'push', 'Text','Plot Simple','Position',[250,240,135,25], 'ButtonPushedFcn', @(btn,event) LineBHelp([]));
+butPlotRound = uibutton(fig,'push', 'Text','Plot Round method','Position',[250,270,135,25], 'ButtonPushedFcn', @(btn,event) LineBRound([]));
+butPlotTwo = uibutton(fig,'push', 'Text','Plot Two methods','Position',[250,300,135,25], 'ButtonPushedFcn', @(btn,event) RunBoth());
 exitButton = uibutton(fig,'push', 'Text','Exit','Position',[0,0,135,25], 'ButtonPushedFcn', @(btn,event) quit);
 
 function clearPlot()
@@ -13,14 +14,17 @@ function clearPlot()
     yMax = 80;
     axis([0 xMax 0 yMax]);
 
-function LineBHelp()
+function LineBHelp(coord)
 clc
 grid on;
-xMax = 80;
-yMax = 80;
+xMax = 50;
+yMax = 50;
 axis([0 xMax 0 yMax]);
 
-coord = ginput(2);
+if isempty(coord)
+    coord = ginput(2);
+end
+
 x = round(coord(:,1));
 y = round(coord(:,2));
 x0 = x(1,:);
@@ -73,14 +77,16 @@ end
 axis([0 xMax 0 yMax]);
 grid on;
 
-function LineBRound()
+function LineBRound(coord)
 clc
 grid on;
-xMax = 80;
-yMax = 80;
+xMax = 50;
+yMax = 50;
 axis([0 xMax 0 yMax]);
 
-coord = ginput(2);
+if isempty(coord)
+    coord = ginput(2);
+end
 x = round(coord(:,1));
 y = round(coord(:,2));
 x0 = x(1,:);
@@ -128,3 +134,13 @@ for i=0:H
 end
 axis([0 xMax 0 yMax]);
 grid on;
+
+function RunBoth()
+clc
+grid on;
+xMax = 50;
+yMax = 50;
+axis([0 xMax 0 yMax]);
+coord = ginput(2);
+LineBHelp(coord)
+LineBRound(coord)
