@@ -126,6 +126,14 @@ struct S {
 	typename T::ptr i;
 };
 
+int callFunctionWith2(int f(int)) {
+	return f(2);
+}
+
+void constToNonConst(int& a) {
+	a = a * a * a;
+}
+
 int main() {
 	MyNamespace::MyStruct<float> x(5), y(8);
 	auto z = x + y;
@@ -152,5 +160,17 @@ int main() {
 	S<typedefStruct> var;
 	int number = 3;
 	var.i = &number;
+	auto square = [](int x) {
+		return x * x;
+	};
+	auto three = [](int x) {
+		return x * x * x;
+	};
+	std::cout << callFunctionWith2(square) << ' ' << callFunctionWith2(three) << std::endl;
+
+	int intA = 10;
+	const int& aRefConst = intA;
+	constToNonConst(const_cast<int&>(aRefConst));
+	std::cout << aRefConst << std::endl;
 	return 0;
 }
