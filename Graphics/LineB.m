@@ -10,15 +10,15 @@ function clearPlot()
     cla reset;
     clc;
     grid on;
-    xMax = 80;
-    yMax = 80;
+    xMax = 10;
+    yMax = 10;
     axis([0 xMax 0 yMax]);
 
 function LineBHelp(coord)
 clc
 grid on;
-xMax = 50;
-yMax = 50;
+xMax = 10;
+yMax = 10;
 axis([0 xMax 0 yMax]);
 
 if isempty(coord)
@@ -57,13 +57,19 @@ Est = 2 * V - H;
 
 curX = x0;
 curY = y0;
+curZ = x1;
+curT = y1;
 hold on;
-for i=0:H
-    plot(curX,curY,'r.')
+for i=0:H/2
+    plot(curX,curY,'b*')
+    plot(curZ,curT,'b*');
+    pause(1)
     if Est >= 0
         Est = Est + incUp;
         curX = curX + incX;
         curY = curY + incY;
+        curZ = curZ - incX;
+        curT = curT - incY;
     else
         Est = Est + incDn;
         if reverse == true
@@ -80,8 +86,8 @@ grid on;
 function LineBRound(coord)
 clc
 grid on;
-xMax = 50;
-yMax = 50;
+xMax = 10;
+yMax = 10;
 axis([0 xMax 0 yMax]);
 
 if isempty(coord)
@@ -110,6 +116,7 @@ end
 
 if H==0
     plot(x0,y0,'r*');
+    pause(1);
     return;
 end
 
@@ -130,7 +137,8 @@ for i=0:H
     if sy
         y = - y;
     end
-    plot(x+x0,y+y0,'r.');
+    plot(x+x0,y+y0,'r*');
+    pause(1);
 end
 axis([0 xMax 0 yMax]);
 grid on;
@@ -138,8 +146,8 @@ grid on;
 function RunBoth()
 clc
 grid on;
-xMax = 50;
-yMax = 50;
+xMax = 10;
+yMax = 10;
 axis([0 xMax 0 yMax]);
 coord = ginput(2);
 LineBHelp(coord)
