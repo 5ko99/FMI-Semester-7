@@ -1,27 +1,23 @@
 function Cirlce
     clc;
     clear;
-    xMax = 20;
-    yMax = 20;
+    xMax = 50;
+    yMax = 50;
     M=zeros(xMax,yMax); 
     Ax=axes;
     image(M');
     set(Ax,'YDir','normal');
-    color = 50;
+    color = 250;
     set(Ax,'YDir','normal');
-   % axis([0 xMax 0 yMax]);
     coord = ginput(1);
     xc = round(coord(:,1));
     yc = round(coord(:,2));
     R = inputdlg("Enter R");
     R = cell2mat(R);
     R = round(str2double(R));
-    M = DrawBresCircle(xc,yc,R,M,color);
-    pause(1);
-    image(M');
     M = FillCircle(xc,yc,R,color,M);
-    pause(1);
-    image(M');
+    %pause(2);
+    %M = DrawBresCircle(xc,yc,R,M,color*50);
 end
 
 function M = DrawBresCircle(xc,yc,R,M,color)
@@ -29,6 +25,8 @@ function M = DrawBresCircle(xc,yc,R,M,color)
     y = R;
     d = 3-2*R;
     M = EightSymetric(xc,yc,x,y,color,M);
+    image(M');
+    pause(0.7);
     while(y>=x)
         x = x+1;
         if(d>0)
@@ -38,6 +36,8 @@ function M = DrawBresCircle(xc,yc,R,M,color)
             d = d + 4 * x + 6;
         end
         M=EightSymetric(xc,yc,x,y,color,M);
+        image(M');
+        pause(0.7);
     end
     return;
 end
@@ -47,8 +47,10 @@ function M = FillCircle(xc,yc,R,color,M)
     x = 0;
     y = R;
     d = 3-2*R;
-    M = EightSymetricLine(xc,yc,x,y,color,M);
-    while(y>=x)
+    M = EightSymetricLine(xc,yc,x,y,color*13,M);
+    image(M');
+    pause(0.7);
+    while(y>x)
         x = x+1;
         if(d>0)
             y = y - 1;
@@ -56,7 +58,9 @@ function M = FillCircle(xc,yc,R,color,M)
         else
             d = d + 4 * x + 6;
         end
-        M = EightSymetricLine(xc,yc,x,y,color,M);
+        M = EightSymetricLine(xc,yc,x,y,color+8*x+8*y,M);
+        image(M');
+        pause(0.7);
     end
     return;
 end
@@ -128,10 +132,8 @@ Est = 2 * V - H;
 
 X = x0;
 Y = y0;
-hold on;
 for i=0:H
     M(X,Y) = color;
-    pause(0);
     if Est >= 0
         Est = Est + incUp;
         X = X + incX;

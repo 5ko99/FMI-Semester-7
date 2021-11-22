@@ -62,7 +62,7 @@ curT = y1;
 hold on;
 for i=0:H/2
     plot(curX,curY,'b*')
-    plot(curZ,curT,'b*');
+    plot(curZ,curT,'b*')
     pause(1)
     if Est >= 0
         Est = Est + incUp;
