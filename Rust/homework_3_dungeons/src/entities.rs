@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet, VecDeque},
     fs::File,
     io::{BufRead, BufReader},
     rc::Rc,
@@ -36,6 +36,12 @@ impl Direction {
             Direction::East => Direction::West,
             Direction::West => Direction::East,
         }
+    }
+
+    pub fn iter() -> impl Iterator<Item = Direction> {
+        [Direction::North, Direction::South, Direction::East, Direction::West]
+            .iter()
+            .cloned()
     }
 }
 
@@ -281,6 +287,40 @@ impl Dungeon {
         start_room_name: &str,
         end_room_name: &str
     ) -> Result<Option<Vec<&Room>>, Errors> {
-        todo!()
+        let mut visited = HashSet::new();
+        let mut queue = VecDeque::new();
+        let mut parents = HashMap::new();
+        queue.push_front(start_room_name);
+        visited.insert(start_room_name);
+        parents.insert(start_room_name, None);
+        while let Some(room_name) = queue.pop_back() {
+            if room_name == end_room_name {
+                let mut path = Vec::new();
+                let mut current_room = room_name;
+                path.push(self.rooms.get(current_room).unwrap().as_ref());
+                while let Some(parent) = parents.get(current_room) {
+                    if !parent.is_none() {
+                        path.push(self.rooms.get(parent.unwrap()).unwrap().as_ref());
+                        current_room = parent.unwrap();
+                    } else {
+                        break;
+                    }
+                }
+                //path.push(self.rooms.get(start_room_name).unwrap().as_ref());
+                path.reverse();
+                return Ok(Some(path));
+            }
+            for direction in Direction::iter() {
+                if let Ok(Some(neigh)) = self.get_next_room(room_name, direction) {
+                    let neigh_name = neigh.name.as_str();
+                    if !visited.contains(&neigh_name) {
+                        queue.push_front(neigh_name);
+                        visited.insert(neigh_name);
+                        parents.insert(neigh_name, Some(room_name));
+                    }
+                }
+            }
+        }
+        Ok(None)
     }
 }

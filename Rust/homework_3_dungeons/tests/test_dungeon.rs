@@ -133,6 +133,17 @@ fn read_dungeon2_file() {
 }
 
 #[test]
+fn test_path_1() {
+    let dungeon = Dungeon::read_from_file("tests/test_dungeon2.txt").unwrap();
+    let path = dungeon.find_path("Entrance", "Magic Lab").unwrap().unwrap();
+
+    assert_eq!(path.len(), 3);
+    assert_eq!(path[0].name, "Entrance");
+    assert_eq!(path[1].name, "Hallway");
+    assert_eq!(path[2].name, "Magic Lab");
+}
+
+#[test]
 fn test_basic_1() {
     let mut dungeon = Dungeon::new();
 
@@ -164,14 +175,14 @@ fn test_basic_2() {
     assert_eq!(dungeon.get_next_room("Entrance", Direction::East).unwrap().unwrap().name, "Hallway");
 }
 
-// #[test]
-// fn test_basic_3() {
-//     let mut dungeon = Dungeon::new();
+#[test]
+fn test_basic_3() {
+    let mut dungeon = Dungeon::new();
 
-//     dungeon.add_room("Entrance").unwrap();
-//     dungeon.add_room("Treasure Room").unwrap();
-//     dungeon.set_link("Entrance", Direction::West, "Treasure Room").unwrap();
+    dungeon.add_room("Entrance").unwrap();
+    dungeon.add_room("Treasure Room").unwrap();
+    dungeon.set_link("Entrance", Direction::West, "Treasure Room").unwrap();
 
-//     let path = dungeon.find_path("Entrance", "Treasure Room").unwrap().unwrap();
-//     assert!(path.len() > 0);
-// }
+    let path = dungeon.find_path("Entrance", "Treasure Room").unwrap().unwrap();
+    assert!(path.len() > 0);
+}
