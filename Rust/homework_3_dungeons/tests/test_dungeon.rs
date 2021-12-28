@@ -144,6 +144,27 @@ fn test_path_1() {
 }
 
 #[test]
+fn test_path_cycle() {
+    let mut dungeon = Dungeon::new();
+    dungeon.add_room("A").unwrap();
+    dungeon.set_link("A", Direction::West, "A").unwrap();
+    let path = dungeon.find_path("A","A").unwrap().unwrap();
+    assert_eq!(path.len(),1);
+    assert_eq!(path[0].name,"A");
+}
+
+#[test]
+fn test_path_2() {
+    let dungeon = Dungeon::read_from_file("tests/test_dungeon1.txt").unwrap();
+    let path = dungeon.find_path("Entrance", "Magic Lab").unwrap().unwrap();
+
+    assert_eq!(path.len(), 3);
+    assert_eq!(path[0].name, "Entrance");
+    assert_eq!(path[1].name, "Hallway");
+    assert_eq!(path[2].name, "Magic Lab");
+}
+
+#[test]
 fn test_basic_1() {
     let mut dungeon = Dungeon::new();
 
