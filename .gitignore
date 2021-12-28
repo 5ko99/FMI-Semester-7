@@ -529,3 +529,4 @@ FodyWeavers.xsd
 #Ninja
 .ninja_deps
 .ninja_log
+Rust/rust-shooter

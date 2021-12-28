@@ -1,3 +1,5 @@
+use std::{fs::File, io::{BufRead, BufReader}};
+
 use homework_3_dungeons::entities::{Direction, Dungeon};
 
 #[test]
@@ -100,3 +102,76 @@ fn concet_one_room_with_self() {
     assert_eq!(dungeon.get_next_room("Entrance", Direction::East).unwrap().unwrap().name, "Entrance");
     assert_eq!(dungeon.get_next_room("Entrance", Direction::West).unwrap().unwrap().name, "Entrance");
 }
+
+#[test]
+fn read_dungeon1_file() {
+    let dungeon = Dungeon::read_from_file("tests/test_dungeon1.txt").unwrap();
+
+    assert_eq!(dungeon.rooms.len(), 3);
+    assert_eq!(dungeon.get_next_room("Entrance", Direction::East).unwrap().unwrap().name, "Hallway");
+    assert_eq!(dungeon.get_next_room("Hallway", Direction::West).unwrap().unwrap().name, "Magic Lab");
+    assert_eq!(dungeon.get_next_room("Magic Lab", Direction::East).unwrap().unwrap().name, "Hallway");
+}
+
+#[test]
+fn read_dungeon2_file() {
+    let dungeon = Dungeon::read_from_file("tests/test_dungeon2.txt").unwrap();
+
+    assert_eq!(dungeon.rooms.len(), 6);
+    assert_eq!(dungeon.get_next_room("Entrance", Direction::East).unwrap().unwrap().name, "Hallway");
+    assert_eq!(dungeon.get_next_room("Entrance", Direction::North).unwrap().unwrap().name, "Exit");
+    assert_eq!(dungeon.get_next_room("Hallway", Direction::West).unwrap().unwrap().name, "Entrance");
+    assert_eq!(dungeon.get_next_room("Hallway", Direction::North).unwrap().unwrap().name, "Bedroom");
+    assert_eq!(dungeon.get_next_room("Hallway", Direction::South).unwrap().unwrap().name, "Magic Lab");
+    assert_eq!(dungeon.get_next_room("Bedroom", Direction::West).unwrap().unwrap().name, "Exit");
+    assert_eq!(dungeon.get_next_room("Bedroom", Direction::South).unwrap().unwrap().name, "Magic Lab");
+    assert_eq!(dungeon.get_next_room("Magic Lab", Direction::North).unwrap().unwrap().name, "Bedroom");
+    assert_eq!(dungeon.get_next_room("Exit", Direction::South).unwrap().unwrap().name, "Entrance");
+    assert_eq!(dungeon.get_next_room("Exit", Direction::East).unwrap().unwrap().name, "Bedroom");
+    assert_eq!(dungeon.get_next_room("Exit", Direction::North).unwrap().unwrap().name, "Special Room");
+    assert_eq!(dungeon.get_next_room("Special Room", Direction::South).unwrap().unwrap().name, "Exit");
+}
+
+#[test]
+fn test_basic_1() {
+    let mut dungeon = Dungeon::new();
+
+    dungeon.add_room("Entrance").unwrap();
+    dungeon.add_room("Hallway").unwrap();
+    dungeon.set_link("Entrance", Direction::East, "Hallway").unwrap();
+
+    assert_eq!(dungeon.get_room("Entrance").unwrap().name, "Entrance");
+    assert_eq!(dungeon.get_next_room("Entrance", Direction::East).unwrap().unwrap().name, "Hallway");
+}
+
+const TEST_INPUT_1: &str = "
+## Rooms
+- Entrance
+- Hallway
+
+## Links
+- Entrance -> East -> Hallway
+";
+
+#[test]
+fn test_basic_2() {
+    // .trim() за да премахнем първия и последния ред:
+    let dungeon = Dungeon::from_reader(TEST_INPUT_1.trim().as_bytes()).unwrap();
+
+    assert_eq!(dungeon.get_room("Entrance").unwrap().name, "Entrance");
+    assert_eq!(dungeon.get_room("Hallway").unwrap().name, "Hallway");
+
+    assert_eq!(dungeon.get_next_room("Entrance", Direction::East).unwrap().unwrap().name, "Hallway");
+}
+
+// #[test]
+// fn test_basic_3() {
+//     let mut dungeon = Dungeon::new();
+
+//     dungeon.add_room("Entrance").unwrap();
+//     dungeon.add_room("Treasure Room").unwrap();
+//     dungeon.set_link("Entrance", Direction::West, "Treasure Room").unwrap();
+
+//     let path = dungeon.find_path("Entrance", "Treasure Room").unwrap().unwrap();
+//     assert!(path.len() > 0);
+// }

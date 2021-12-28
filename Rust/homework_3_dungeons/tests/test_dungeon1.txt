@@ -1,0 +1,8 @@
+## Rooms
+- Entrance
+- Hallway
+- Magic Lab
+
+## Links
+- Entrance -> East -> Hallway
+- Hallway -> West -> Magic Lab

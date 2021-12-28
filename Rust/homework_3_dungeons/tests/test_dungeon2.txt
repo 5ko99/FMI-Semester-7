@@ -1,0 +1,16 @@
+## Rooms
+- Entrance
+- Hallway
+- Magic Lab
+- Bedroom
+- Special Room
+- Exit
+
+## Links
+- Entrance -> East -> Hallway
+- Hallway -> South -> Magic Lab
+- Hallway -> North -> Bedroom
+- Entrance -> North -> Exit
+- Bedroom -> South -> Magic Lab
+- Bedroom -> West -> Exit
+- Exit -> North -> Special Room

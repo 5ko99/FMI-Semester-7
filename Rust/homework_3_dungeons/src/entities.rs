@@ -1,5 +1,9 @@
-use std::{collections::HashMap, rc::Rc, ops::{DerefMut, RangeBounds}};
-
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::{BufRead, BufReader},
+    rc::Rc,
+};
 
 /// Различните грешки, които ще очакваме да върнете като резултат от някои невалидни операции.
 /// Повече детайли по-долу.
@@ -100,7 +104,7 @@ impl Dungeon {
     /// върнете тази, която проверявате първо.
     ///
     pub fn set_link(
-        & mut self,
+        &mut self,
         room_name: &str,
         direction: Direction,
         other_room_name: &str,
@@ -112,10 +116,13 @@ impl Dungeon {
             return Err(Errors::UnknownRoom(other_room_name.to_string()));
         }
         let room = Rc::get_mut(self.rooms.get_mut(room_name).unwrap()).unwrap();
-        room.connections.insert(direction, other_room_name.to_string());
+        room.connections
+            .insert(direction, other_room_name.to_string());
 
         let other_room = Rc::get_mut(self.rooms.get_mut(other_room_name).unwrap()).unwrap();
-        other_room.connections.insert(direction.opposite(), room_name.to_string());
+        other_room
+            .connections
+            .insert(direction.opposite(), room_name.to_string());
 
         Ok(())
     }
@@ -141,5 +148,139 @@ impl Dungeon {
         } else {
             Ok(None)
         }
+    }
+
+    /// Прочитаме структурата на dungeon от нещо, което имплементира `BufRead`. Това може да е
+    /// файл, или, ако тестваме, може да е просто колекция от байтове.
+    ///
+    /// Успешен резултат връща новосъздадения dungeon, пакетиран в `Ok`.
+    ///
+    /// Вижте по-долу за обяснение на грешките, които очакваме.
+    ///
+    pub fn from_reader<B: BufRead>(reader: B) -> Result<Self, Errors> {
+        let mut dungeon = Dungeon::new();
+        let mut line_count = 0;
+        let mut parsing = Parsing::Room;
+        let mut next_line_links = false;
+        for line in reader.lines() {
+            let line = line.unwrap();
+            line_count += 1;
+            match parsing {
+                Parsing::Room => {
+                    if line_count == 1 && line != "## Rooms" {
+                        return Err(Errors::LineParseError { line_number: 1 });
+                    } else if line_count == 1 && line == "## Rooms" {
+                        continue;
+                    } else if line.is_empty() && line_count != 1 {
+                        parsing = Parsing::Links;
+                        next_line_links = true;
+                    } else if let Some(room_name) = match_prefix("- ", &line) {
+                        dungeon.add_room(room_name)?;
+                    } else {
+                        return Err(Errors::LineParseError {
+                            line_number: line_count,
+                        });
+                    }
+                }
+                Parsing::Links => {
+                    if next_line_links && line != "## Links" {
+                        return Err(Errors::LineParseError {
+                            line_number: line_count,
+                        });
+                    } else if next_line_links && line == "## Links" {
+                        next_line_links = false;
+                    } else if let Some(link_info) = match_prefix("- ", &line) {
+                        let parsed_link = match_link(link_info);
+                        if let Some(Link {
+                            from,
+                            direction,
+                            to,
+                        }) = parsed_link
+                        {
+                            dungeon.set_link(&from, direction, &to)?;
+                        } else {
+                            return Err(Errors::LineParseError {
+                                line_number: line_count,
+                            });
+                        }
+                    } else {
+                        return Err(Errors::LineParseError {
+                            line_number: line_count,
+                        });
+                    }
+                }
+            }
+        }
+
+        if line_count == 0 {
+            Err(Errors::LineParseError { line_number: 0 })
+        } else {
+            Ok(dungeon)
+        }
+    }
+
+    pub fn read_from_file(filename: &str) -> Result<Self, Errors> {
+        let file = File::open(filename).unwrap();
+        let reader = BufReader::new(file);
+        Dungeon::from_reader(reader)
+    }
+}
+
+/// match_prefix("- ", "- Foo") //=> Some("Foo")
+/// match_prefix("- ", "Bar")   //=> None
+///
+fn match_prefix<'a, 'b>(prefix: &'a str, input: &'b str) -> Option<&'b str> {
+    if input.starts_with(prefix) {
+        Some(&input[prefix.len()..])
+    } else {
+        None
+    }
+}
+
+pub struct Link {
+    from: String,
+    to: String,
+    direction: Direction,
+}
+
+fn match_link<'b>(input: &'b str) -> Option<Link> {
+    let mut link = Link {
+        from: String::new(),
+        to: String::new(),
+        direction: Direction::North,
+    };
+
+    let mut iter = input.split_terminator(" -> ");
+    link.from = iter.next().unwrap().to_string();
+    link.direction = match iter.next().unwrap() {
+        "North" => Direction::North,
+        "South" => Direction::South,
+        "East" => Direction::East,
+        "West" => Direction::West,
+        _ => return None,
+    };
+    link.to = iter.next().unwrap().to_string();
+    Some(link)
+}
+
+enum Parsing {
+    Room,
+    Links,
+}
+
+impl Dungeon {
+    /// Търси път от `start_room_name` до `end_room_name` и го връща във вектор, пакетиран във
+    /// `Ok(Some(` ако намери.
+    ///
+    /// Ако няма път между тези две стаи, връща `Ok(None)`.
+    ///
+    /// Ако четенето на стаи в един момент върне грешка, очакваме да върнете грешката нагоре.
+    ///
+    pub fn find_path(
+        &self,
+        start_room_name: &str,
+        end_room_name: &str
+    ) -> Result<Option<Vec<&Room>>, Errors> {
+        todo!()
     }
 }
