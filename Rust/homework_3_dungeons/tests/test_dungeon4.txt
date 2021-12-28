@@ -1,0 +1,12 @@
+## Rooms
+- A
+- B
+- C
+- D
+- Z
+
+## Links
+- A -> East -> B
+- A -> South -> C
+- B -> South -> C
+- C -> West -> D

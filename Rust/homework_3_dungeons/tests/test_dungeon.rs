@@ -1,10 +1,8 @@
-use std::{fs::File, io::{BufRead, BufReader}};
-
 use homework_3_dungeons::entities::{Direction, Dungeon};
 
 #[test]
 fn create_empty_dungeon() {
-    let mut dungeon = Dungeon::new();
+    let dungeon = Dungeon::new();
     assert_eq!(dungeon.rooms.len(), 0);
 }
 
@@ -162,6 +160,26 @@ fn test_path_2() {
     assert_eq!(path[0].name, "Entrance");
     assert_eq!(path[1].name, "Hallway");
     assert_eq!(path[2].name, "Magic Lab");
+}
+
+#[test]
+fn test_path_3() {
+    let dungeon = Dungeon::read_from_file("tests/test_dungeon3.txt").unwrap();
+    let path = dungeon.find_path("A", "Z").unwrap().unwrap();
+
+    assert_eq!(path.len(), 4);
+    assert_eq!(path[0].name, "A");
+    assert_eq!(path[1].name, "C");
+    assert_eq!(path[2].name, "D");
+    assert_eq!(path[3].name, "Z");
+}
+
+#[test]
+fn test_path_4() {
+    let dungeon = Dungeon::read_from_file("tests/test_dungeon4.txt").unwrap();
+    let path = dungeon.find_path("A", "Z").unwrap();
+
+    assert_eq!(path, None);
 }
 
 #[test]

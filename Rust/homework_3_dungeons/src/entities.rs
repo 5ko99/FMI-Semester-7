@@ -297,16 +297,15 @@ impl Dungeon {
             if room_name == end_room_name {
                 let mut path = Vec::new();
                 let mut current_room = room_name;
-                path.push(self.rooms.get(current_room).unwrap().as_ref());
                 while let Some(parent) = parents.get(current_room) {
                     if !parent.is_none() {
-                        path.push(self.rooms.get(parent.unwrap()).unwrap().as_ref());
+                        path.push(self.rooms.get(current_room).unwrap().as_ref());
                         current_room = parent.unwrap();
                     } else {
                         break;
                     }
                 }
-                //path.push(self.rooms.get(start_room_name).unwrap().as_ref());
+                path.push(self.rooms.get(start_room_name).unwrap().as_ref());
                 path.reverse();
                 return Ok(Some(path));
             }
