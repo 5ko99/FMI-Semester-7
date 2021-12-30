@@ -1,4 +1,4 @@
-use homework_3_dungeons::entities::{Direction, Dungeon};
+use homework_3_dungeons::entities::{Direction, Dungeon, Errors};
 
 #[test]
 fn create_empty_dungeon() {
@@ -180,6 +180,12 @@ fn test_path_4() {
     let path = dungeon.find_path("A", "Z").unwrap();
 
     assert_eq!(path, None);
+}
+
+#[test]
+#[should_panic]
+fn test_read_error() {
+    Dungeon::read_from_file("tests/test_dungeon_error.txt").err().unwrap();
 }
 
 #[test]

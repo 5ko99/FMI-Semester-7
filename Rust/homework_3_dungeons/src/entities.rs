@@ -39,9 +39,14 @@ impl Direction {
     }
 
     pub fn iter() -> impl Iterator<Item = Direction> {
-        [Direction::North, Direction::South, Direction::East, Direction::West]
-            .iter()
-            .cloned()
+        [
+            Direction::North,
+            Direction::South,
+            Direction::East,
+            Direction::West,
+        ]
+        .iter()
+        .cloned()
     }
 }
 
@@ -169,6 +174,9 @@ impl Dungeon {
         let mut parsing = Parsing::Room;
         let mut next_line_links = false;
         for line in reader.lines() {
+            if line.is_err() {
+                return Err(Errors::IoError(line.err().unwrap()));
+            }
             let line = line.unwrap();
             line_count += 1;
             match parsing {
@@ -285,7 +293,7 @@ impl Dungeon {
     pub fn find_path(
         &self,
         start_room_name: &str,
-        end_room_name: &str
+        end_room_name: &str,
     ) -> Result<Option<Vec<&Room>>, Errors> {
         let mut visited = HashSet::new();
         let mut queue = VecDeque::new();
